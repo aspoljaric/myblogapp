@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Sign Up</title>
+    <style type="text/css">
+      .label {text-align: right}
+      .error {color: red}
+    </style>
+
+  </head>
+
+  <body>
+    <h2>Sign Up</h2>
+    <form method="post">
+      <table>
+
+        <tr>
+          <td class="label">
+            First Name
+          </td>
+          <td>
+            <input type="text" name="first_name" value="{{first_name}}">
+          </td>
+          <td class="error">
+            {{error_first_name}}
+          </td>
+        </tr>
+
+        <tr>
+          <td class="label">
+            Last Name
+          </td>
+          <td>
+            <input type="text" name="last_name" value="{{last_name}}">
+          </td>
+          <td class="error">
+            {{error_last_name}}
+          </td>
+        </tr>
+
+        <tr>
+          <td class="label">
+            Email (optional)
+          </td>
+          <td>
+            <input type="text" name="email" value="{{email}}">
+          </td>
+          <td class="error">
+            {{error_email}}
+          </td>
+        </tr>
+
+        <tr>
+          <td class="label">
+            Username
+          </td>
+          <td>
+            <input type="text" name="username" value="{{username}}">
+          </td>
+          <td class="error">
+            {{error_username}}
+          </td>
+        </tr>
+
+        <tr>
+          <td class="label">
+            Password
+          </td>
+          <td>
+            <input type="password" name="password" value="">
+          </td>
+          <td class="error">
+            {{error_password}}
+          </td>
+        </tr>
+
+        <tr>
+          <td class="label">
+            Verify Password
+          </td>
+          <td>
+            <input type="password" name="verify" value="">
+          </td>
+          <td class="error">
+            {{error_verify}}
+          </td>
+        </tr>
+
+      </table>
+
+      <input type="submit">
+    </form>
+  </body>
+
+</html>
