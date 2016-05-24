@@ -230,7 +230,7 @@ class SignUpHandler(Handler):
         		user = User.register(self.username, self.first_name, self.last_name, self.password, self.email)
         		user.put()
         		self.redirect('/')
-            	#self.login(u)
+            	self.login(user)
 #### End Process user sign up information
 
 
