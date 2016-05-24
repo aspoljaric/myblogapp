@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <div class="post-area">
+    {% if user %}
+      <a class="post-entry-link" href="/newblog"><img alt="Write a new entry" src="/images/entry.png"></a>
+    {% endif %}
+  </div>
+  
+  {% for b in blogs %}
+    {{ b.render() | safe }}
+    <br><br>
+  {% endfor %}
+
+{% endblock %}

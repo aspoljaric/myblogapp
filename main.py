@@ -40,6 +40,7 @@ class Handler(webapp2.RequestHandler):
         self.response.out.write(*a, **kw)
 
     def render_str(self, template, **params):
+        params['user'] = self.user
         t = jinja_env.get_template(template)
         return t.render(params)
 
@@ -82,7 +83,12 @@ class Blog(db.Model):
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
     user_id = db.IntegerProperty(required = True)
-    likes = db.IntegerProperty(required = False)
+    likes = db.IntegerProperty(default = 0)
+
+    def render(self):
+        self._render_text = self.content.replace('\n', '<br>')
+        t = jinja_env.get_template("post.html")
+        return t.render(b = self)
 #### End Blog Class
 
 #### Comment Class
@@ -169,15 +175,6 @@ def valid_name(name):
 
 
 
-class MainHandler(Handler):
-    def get(self):
-        self.response.write('Hello world!')
-
-
-
-
-
-
 #### Process user sign up information
 class SignUpHandler(Handler):
 
@@ -240,7 +237,7 @@ class SignUpHandler(Handler):
 
 
 
-
+#### Process user login and log out
 class LoginHandler(Handler):
 	def get(self):
 		self.render("login.html")
@@ -258,16 +255,88 @@ class LoginHandler(Handler):
 			msg = 'Invalid login'
 			self.render('login.html', error = msg)
 
-
-
-
-
-
-
 class LogoutHandler(Handler):
     def get(self):
         self.logout()
         self.redirect('/')
+#### End Process user login and log out
+
+
+
+
+
+
+
+#### Process operations on Blog Entries
+class NewBlogHandler(Handler):
+    def get(self):
+        if self.user:
+            self.render("newblog.html")
+        else:
+            self.redirect("/login")
+
+    def post(self):
+        if not self.user:
+            self.redirect('/')
+
+        subject = self.request.get('subject')
+        content = self.request.get('content')
+
+        if subject and content:
+            b = Blog(subject = subject, 
+                     content = content, 
+                     user_id = self.user.key().id())
+            b.put()
+            self.redirect('/%s' % str(b.key().id()))
+        else:
+            error = "Please enter subject and content."
+            params = dict(subject = subject,
+                          content = content,
+                          error = error)
+            self.render("newblog.html", **params)    
+
+
+class BlogEntryPage(Handler):
+    def get(self, blog_id):
+        key = db.Key.from_path('Blog', int(blog_id))
+        blog = db.get(key)
+
+        if not blog:
+            self.error(404)
+            return
+
+        self.render("permalink.html", blog = blog)
+
+
+class LikeBlogEntryPage(Handler):
+    def get(self, blog_id):
+        if self.user:
+            self.write("here")
+            key = db.Key.from_path('Blog', int(blog_id))
+            blog = db.get(key)
+
+            if not blog:
+                self.error(404)
+                return
+
+            blog.likes += 1
+            blog.put()
+
+            self.redirect("/")
+        else:
+            self.redirect("/login")
+#### End Process operations on Blog Entries
+
+
+
+
+
+#### Home page
+class MainHandler(Handler):
+    def get(self):
+        blogs = Blog.all().order('-created')
+        self.render('home.html', blogs = blogs)
+#### End Home Page
 
 
 
@@ -276,9 +345,11 @@ class LogoutHandler(Handler):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
+    ('/([0-9]+)', BlogEntryPage),
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/signup', SignUpHandler),
-   	#('/post', PostHandler),
+   	('/newblog', NewBlogHandler),
+    ('/like/([0-9]+)', LikeBlogEntryPage),
     #('/comment', CommentHandler)
 ], debug=True)
