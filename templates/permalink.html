@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {{blog.render() | safe}}
+
+    {{blog.render() | safe}}
+
+    <br><br>
+    
+    {% if comments %}
+        {% for c in comments %}
+            {{ c.render() | safe }}
+            <br><br>
+        {% endfor %}
+    {% endif %}
+
 {% endblock %}
+

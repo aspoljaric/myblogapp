@@ -9,8 +9,8 @@ from string import letters
 from google.appengine.ext import db
 
 jinja_env = jinja2.Environment(autoescape=True,
-    		loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__)
-    		,'templates')))
+            loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__)
+            ,'templates')))
 
 
 
@@ -93,56 +93,61 @@ class Blog(db.Model):
 
 #### Comment Class
 class Comment(db.Model):
-	blog_id = db.IntegerProperty(required = True)
-	comment = db.TextProperty(required = True)
-	created = db.DateTimeProperty(auto_now_add = True)
-	user_id = db.IntegerProperty(required = True)
+    blog_id = db.IntegerProperty(required = True)
+    comment = db.TextProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+    username = db.StringProperty(required = True)
+
+    def render(self):
+        self._render_text = self.comment.replace('\n', '<br>')
+        t = jinja_env.get_template("comment.html")
+        return t.render(c = self)
 #### End Comment Class
 
 ### User Class
 def make_salt(length = 5):
- 	return ''.join(random.choice(letters) for x in xrange(length))
+    return ''.join(random.choice(letters) for x in xrange(length))
 
 def valid_pw(username, password, h):
     salt = h.split(',')[0]
-    return h == make_password_hash(username, password, salt)
+    return h == make_password_hash(username.lower(), password, salt)
 
 def make_password_hash(username, password, salt = None):
-	if not salt:
-		salt = make_salt()
-	h = hashlib.sha256(username + password + salt).hexdigest()
-	return '%s,%s' % (salt, h)
+    if not salt:
+        salt = make_salt()
+    h = hashlib.sha256(username.lower() + password + salt).hexdigest()
+    return '%s,%s' % (salt, h)
 
 class User(db.Model):
-	username = db.StringProperty(required = True)
-	first_name = db.StringProperty(required = True)
-	last_name = db.StringProperty(required = True)
-	email = db.StringProperty()
-	password_hash = db.StringProperty(required = True)
+    username = db.StringProperty(required = True)
+    first_name = db.StringProperty(required = True)
+    last_name = db.StringProperty(required = True)
+    email = db.StringProperty()
+    password_hash = db.StringProperty(required = True)
 
-	@classmethod
-	def by_id(cls, uid):
-		return User.get_by_id(uid)
+    @classmethod
+    def by_id(cls, uid):
+        return User.get_by_id(uid)
 
-	@classmethod
-	def by_name(cls, username):
-		u = User.all().filter('username =', username).get()
-		return u
+    @classmethod
+    def by_name(cls, username):
+        u = User.all().filter('username =', username.lower()).get()
+        return u
 
-	@classmethod
-	def register(cls, username, first_name, last_name, password, email = None):
-		password_hash = make_password_hash(username, password)
-		return User(username = username,
-        			first_name = first_name,
-        			last_name = last_name,
+    @classmethod
+    def register(cls, username, first_name, last_name, password, email = None):
+        password_hash = make_password_hash(username.lower(), password)
+        return User(username = username.lower(),
+                    first_name = first_name,
+                    last_name = last_name,
                     password_hash = password_hash,
                     email = email)
 
-	@classmethod
-	def login(cls, username, password):
-		u = cls.by_name(username)
-		if u and valid_pw(username, password, u.password_hash):
-			return u
+    @classmethod
+    def login(cls, username, password):
+        u = cls.by_name(username.lower())
+        if u and valid_pw(username.lower(), password, u.password_hash):
+            return u
 ### End User Class
 
 #### End Database Classes
@@ -163,7 +168,7 @@ def valid_password(password):
 
 EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
 def valid_email(email):
-	return not email or EMAIL_RE.match(email)
+    return not email or EMAIL_RE.match(email)
 
 NAME_RE = re.compile(r"^[a-zA-Z_-]")
 def valid_name(name):
@@ -193,15 +198,16 @@ class SignUpHandler(Handler):
         params = dict(username = self.username,
                       email = self.email,
                       first_name = self.first_name,
-                      last_name = self.last_name)
+                      last_name = self.last_name,
+                      error_username = '')
 
         if not valid_name(self.first_name):
-        	params['error_first_name'] = "That's not a valid first name."
-        	have_error = True
+            params['error_first_name'] = "That's not a valid first name."
+            have_error = True
 
         if not valid_name(self.last_name):
-        	params['error_last_name'] = "That's not a valid last name."
-        	have_error = True
+            params['error_last_name'] = "That's not a valid last name."
+            have_error = True
 
         if not valid_username(self.username):
             params['error_username'] = "That's not a valid username."
@@ -221,16 +227,17 @@ class SignUpHandler(Handler):
         if have_error:
             self.render('signup.html', **params)
         else:
-        	user = User.by_name(self.username)
+            user = User.by_name(self.username)
 
-        	if user:
-        		msg = 'That user already exists.'
-        		self.render('signup.html', error_username = msg)
-        	else:
-        		user = User.register(self.username, self.first_name, self.last_name, self.password, self.email)
-        		user.put()
-        		self.redirect('/')
-            	self.login(user)
+            if user:
+                
+                params['error_username'] = "That user already exists."
+                self.render('signup.html', **params)
+            else:
+                user = User.register(self.username, self.first_name, self.last_name, self.password, self.email)
+                user.put()
+                self.redirect('/')
+                self.login(user)
 #### End Process user sign up information
 
 
@@ -239,21 +246,21 @@ class SignUpHandler(Handler):
 
 #### Process user login and log out
 class LoginHandler(Handler):
-	def get(self):
-		self.render("login.html")
+    def get(self):
+        self.render("login.html")
 
-	def post(self):
-		username = self.request.get('username')
-		password = self.request.get('password')
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
 
-		u = User.login(username, password)
+        u = User.login(username, password)
 
-		if u:
-			self.login(u)
-			self.redirect('/')
-		else:
-			msg = 'Invalid login'
-			self.render('login.html', error = msg)
+        if u:
+            self.login(u)
+            self.redirect('/')
+        else:
+            msg = 'Invalid login'
+            self.render('login.html', error = msg)
 
 class LogoutHandler(Handler):
     def get(self):
@@ -300,18 +307,19 @@ class BlogEntryPage(Handler):
     def get(self, blog_id):
         key = db.Key.from_path('Blog', int(blog_id))
         blog = db.get(key)
+        
 
         if not blog:
             self.error(404)
             return
 
-        self.render("permalink.html", blog = blog)
+        comments = Comment.all().order('-created').filter('blog_id =', int(blog_id))    
+        self.render("permalink.html", blog = blog, comments = comments)
 
 
 class LikeBlogEntryPage(Handler):
     def get(self, blog_id):
         if self.user:
-            self.write("here")
             key = db.Key.from_path('Blog', int(blog_id))
             blog = db.get(key)
 
@@ -322,10 +330,55 @@ class LikeBlogEntryPage(Handler):
             blog.likes += 1
             blog.put()
 
-            self.redirect("/")
+            self.redirect('/%s' % str(blog.key().id()))
         else:
             self.redirect("/login")
 #### End Process operations on Blog Entries
+
+
+
+
+
+
+
+class CommentHandler(Handler):
+    def get(self, blog_id):
+        if self.user:
+            key = db.Key.from_path('Blog', int(blog_id))
+            blog = db.get(key)
+
+            if not blog:
+                self.error(404)
+                return
+
+            self.render("newcomment.html")
+
+        else:
+            self.redirect("/login")
+    def post(self, blog_id):
+        if not self.user:
+            self.redirect('/')
+
+        comment = self.request.get('comment')
+
+        key = db.Key.from_path('Blog', int(blog_id))
+        blog = db.get(key)
+        if not blog:
+            self.error(404)
+            return
+
+        if comment:
+            c = Comment(blog_id = blog.key().id(), 
+                     comment = comment, 
+                     username = self.user.username)
+            c.put()
+
+            self.redirect('/%s' % str(blog.key().id()))
+        else:
+            error = "Please enter a comment."
+            params = dict(comment = comment,
+                          error = error)
+            self.render("newcomment.html", **params)    
 
 
 
@@ -349,7 +402,7 @@ app = webapp2.WSGIApplication([
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/signup', SignUpHandler),
-   	('/newblog', NewBlogHandler),
+    ('/newblog', NewBlogHandler),
     ('/like/([0-9]+)', LikeBlogEntryPage),
-    #('/comment', CommentHandler)
+    ('/comment/([0-9]+)', CommentHandler)
 ], debug=True)
