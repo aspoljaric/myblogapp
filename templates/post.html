@@ -2,7 +2,14 @@
   <div class="blog-heading">
     <div class="blog-title">
       <a href="/{{b.key().id()}}">{{b.subject}}</a>
+
+      <div class="blog-username">
+      {{b.username}}
+      </div>
+
     </div>
+
+
 
     <div class="blog-date">
       {{b.created.strftime("%b %d, %Y")}}

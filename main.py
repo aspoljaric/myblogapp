@@ -5,6 +5,7 @@ import jinja2
 import random
 import hashlib
 import hmac
+import time
 from string import letters
 from google.appengine.ext import db
 
@@ -82,7 +83,7 @@ class Blog(db.Model):
     content = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
-    user_id = db.IntegerProperty(required = True)
+    username = db.StringProperty(required = True)
     likes = db.IntegerProperty(default = 0)
 
     def render(self):
@@ -292,7 +293,7 @@ class NewBlogHandler(Handler):
         if subject and content:
             b = Blog(subject = subject, 
                      content = content, 
-                     user_id = self.user.key().id())
+                     username = self.user.username)
             b.put()
             self.redirect('/%s' % str(b.key().id()))
         else:
@@ -307,13 +308,12 @@ class BlogEntryPage(Handler):
     def get(self, blog_id):
         key = db.Key.from_path('Blog', int(blog_id))
         blog = db.get(key)
-        
 
         if not blog:
             self.error(404)
             return
 
-        comments = Comment.all().order('-created').filter('blog_id =', int(blog_id))    
+        comments = Comment.all().order('-created').filter('blog_id =', int(blog_id))
         self.render("permalink.html", blog = blog, comments = comments)
 
 
@@ -373,6 +373,7 @@ class CommentHandler(Handler):
                      username = self.user.username)
             c.put()
 
+            time.sleep(0.1)
             self.redirect('/%s' % str(blog.key().id()))
         else:
             error = "Please enter a comment."

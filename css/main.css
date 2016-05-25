@@ -99,6 +99,12 @@ input[type=submit] {
 
 }
 
+.blog-username {  
+    color: #999;
+    font-weight: italic;
+
+}
+
 .blog-content {
     margin-top: 5px;
 }
