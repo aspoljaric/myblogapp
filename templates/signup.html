@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Sign Up</h2>
+    <h4>Sign Up</h4>
     <form method="post">
       <table>
 
@@ -30,6 +30,10 @@
         </tr>
 
         <tr>
+          <td colspan="2">&nbsp;</td>
+        </tr>
+
+        <tr>
           <td class="label">
             Email (optional)
           </td>
@@ -39,6 +43,10 @@
           <td class="error">
             {{error_email}}
           </td>
+        </tr>
+
+        <tr>
+          <td colspan="2">&nbsp;</td>
         </tr>
 
         <tr>
@@ -78,7 +86,7 @@
         </tr>
 
       </table>
-
-      <input type="submit">
+      <br>
+      <input class="button" type="submit">
     </form>
 {% endblock %}

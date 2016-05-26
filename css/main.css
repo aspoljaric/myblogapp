@@ -1,6 +1,7 @@
 body {
     position: relative;
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: medium-content-sans-serif-font,"Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Arial,sans-serif;
+   
     font-size: 14px;
 
     width: 800px;
@@ -10,20 +11,26 @@ body {
 }
 
 .login-area {
-    font-size: 13px;
-    color: gray;
+   
     position: absolute;
     top: 10px;
     right: 10px;
+
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
+    letter-spacing: 0;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 14px;
+    color: rgba(0,0,0,.8);
 }
 
 .login-link {
-    color: gray;
+    color: rgba(0,0,0,.8);
     text-decoration: none;
 }
 
 .login-link:visited {
-    color: gray;
+    color: rgba(0,0,0,.8);
 }
 
 .login-link:hover {
@@ -49,32 +56,27 @@ label + label {
     margin-top: 20px;
 }
 
-input[type=text] {
-    width: 500px;
-    font-size: 20px;
-    padding: 2px;
-    font-family: monospace;
-}
+
 
 textarea {
-  width: 500px;
+  width: 800px;
   height: 400px;
   font-size: 17px;
   font-family: monospace;
 }
 
-input[type=submit] {
-  font-size: 24px;
-}
 
 .main-title {
     display: block;
-    color: #222;
-    font-size: 40px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 70px;
     text-decoration: none;
+    font-size: 31px;
+    background: #fff;
+    color: rgba(0,0,0,.3);
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
+    letter-spacing: 0;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .blog + .blog {
@@ -82,31 +84,127 @@ input[type=submit] {
 }
 
 .blog-heading {
-    position: relative;
-    border-bottom: 3px solid #666;
+    position: relative;   
+}
+
+.blog {
+
+     border: 1px solid rgba(0,0,0,.09);
+     padding: 10px;
 }
 
 .blog-title {
-    font-size: 24px;
-    font-weight: bold;
+    color: rgba(0,0,0,.8);
+    font-family: medium-content-sans-serif-font,"Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Arial,sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 31px;
+    margin-left: -1.94px;
+    line-height: 1.12;
+    letter-spacing: -.022em;
+
 }
+
+.blog-title > a:link {
+    color: rgba(0,0,0,.8);
+}
+
+.blog-title > a:visited {
+    color: rgba(0,0,0,.8);
+}
+
+
+a { text-decoration: none; }
 
 .blog-date {
     position: absolute;
     right: 0px;
     bottom: 0px;
-    color: #999;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
+    letter-spacing: 0;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 14px;
+    color: rgba(0,0,0,.8);
 
 }
 
 .blog-username {  
-    color: #999;
-    font-weight: italic;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
+    letter-spacing: 0;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 14px;
+    color: rgba(0,0,0,.8);
 
 }
 
 .blog-content {
     margin-top: 5px;
+    font-family: medium-content-serif-font,Georgia,Cambria,"Times New Roman",Times,serif;
+    letter-spacing: .01rem;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 21px;
+    line-height: 1.58;
+    letter-spacing: -.003em;
+}
+
+.comment-text {
+    margin-top: 5px;
+    font-family: medium-content-serif-font,Georgia,Cambria,"Times New Roman",Times,serif;
+    letter-spacing: .01rem;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 21px;
+    line-height: 1.58;
+    letter-spacing: -.003em; 
+}
+
+.subject-text {
+    margin-top: 5px;
+    font-family: medium-content-serif-font,Georgia,Cambria,"Times New Roman",Times,serif;
+    letter-spacing: .01rem;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 21px;
+    line-height: 1.58;
+    letter-spacing: -.003em; 
+}
+
+.content-text {
+    margin-top: 5px;
+    font-family: medium-content-serif-font,Georgia,Cambria,"Times New Roman",Times,serif;
+    letter-spacing: .01rem;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 21px;
+    line-height: 1.58;
+    letter-spacing: -.003em; 
+}
+
+h4 {
+    font-family: medium-content-sans-serif-font,"Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Arial,sans-serif;
+    letter-spacing: -.02em;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 28px;
+    margin-left: -1.75px;
+    line-height: 1.22;
+    letter-spacing: -.022em;
+}
+
+.button {
+    font-family: medium-content-sans-serif-font,"Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Arial,sans-serif;
+   
+    font-weight: 300;
+    font-style: normal;
+   
+}
+
+.blog-like {
+    font-family: medium-content-sans-serif-font,"Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Arial,sans-serif;
+    font-weight: bold;
 }
 
 .blog-comment {
@@ -120,8 +218,21 @@ input[type=submit] {
 
 .post-area {
     position: absolute;
-    right: 0px;
+    right: 8px;
     top: 40px;
 
 }
 
+.comment {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
+    letter-spacing: 0;
+    font-weight: 400;
+    font-style: normal;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -moz-font-feature-settings: "liga" on;
+    color: rgba(0,0,0,.8);
+    font-size: 18px;
+    line-height: 1.4;
+}

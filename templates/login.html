@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Login</h2>
+    <h4>Login</h4>
     <form method="post">
       <table>
         <tr>
@@ -27,11 +27,12 @@
         {{error}}
       </div>
 
-      <input type="submit">
+      <br>
+      <input class = "button" type="submit">
 
       <br><br>
       <div>
-        New user? Please click <a href="/signup">here</a> to sign up.
+        New user? Please click <b><a href="/signup">here</a></b> to sign up.
       </div>
 
     </form>

@@ -260,7 +260,7 @@ class LoginHandler(Handler):
             self.login(u)
             self.redirect('/')
         else:
-            msg = 'Invalid login'
+            msg = 'Invalid login.'
             self.render('login.html', error = msg)
 
 class LogoutHandler(Handler):
