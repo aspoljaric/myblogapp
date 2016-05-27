@@ -3,8 +3,8 @@
     <li><b>{{c._render_text}}</b> - <i>{{ c.username }}</i> - {{c.created.strftime("%b %d, %Y")}}
 
     {% if user.username == c.username %}
-      <a href="/editcomment/{{c.key().id()}}"> Edit</a>
-      <a href="/deletecomment/{{c.key().id()}}"> Delete</a>
+      <a href="/editcomment/{{c.key().id()}}"> <img alt="Edit" src="/images/edit.png"></a>
+      <a href="/deletecomment/{{c.key().id()}}"> <img alt="Delete" src="/images/delete.png"></a>
     {% endif %}
 
     </li>

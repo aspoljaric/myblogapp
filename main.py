@@ -392,7 +392,8 @@ class EditBlogHandler(Handler):
 
             params = dict(subject = blog.subject,
                           content = blog.content,
-                          is_new = False)
+                          is_new = False,
+                          blog_id = blog_id)
             self.render("newblog.html", **params)
 
         else:
@@ -422,7 +423,8 @@ class EditBlogHandler(Handler):
             params = dict(subject = subject,
                           content = content,
                           error = error,
-                          is_new = False)
+                          is_new = False,
+                          blog_id = blog_id)
             self.render("newblog.html", **params)    
 #### End Process operations on Blog Entries
 
@@ -505,7 +507,8 @@ class EditCommentHandler(Handler):
                 return
 
             params = dict(comment = comment.comment,
-                          is_new = False)
+                          is_new = False,
+                          blog_id = comment.blog_id)
             self.render("newcomment.html", **params)
 
         else:
@@ -533,7 +536,8 @@ class EditCommentHandler(Handler):
             error = "Please enter a comment."
             params = dict(comment = comment_form,
                           error = error,
-                          is_new = False)
+                          is_new = False,
+                          blog_id = comment.blog_id)
             self.render("newcomment.html", **params)   
 #### End Process operations on Blog Entries
 

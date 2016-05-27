@@ -100,6 +100,7 @@ textarea {
     font-style: normal;
     font-size: 31px;
     margin-left: -1.94px;
+    margin-right: 10px;
     line-height: 1.12;
     letter-spacing: -.022em;
 
@@ -137,6 +138,26 @@ a { text-decoration: none; }
     font-size: 14px;
     color: rgba(0,0,0,.8);
 
+}
+
+.blog-operations {
+    position: absolute;
+    right: 0px;
+    top:1px;
+    
+}
+
+.cancel-link {
+    font-weight: bold;
+    color: rgba(0,0,0,.8);
+}
+
+.cancel-link > a:link {
+    color: rgba(0,0,0,.8);
+}
+
+.cancel-link > a:visited {
+    color: rgba(0,0,0,.8);
 }
 
 .blog-content {

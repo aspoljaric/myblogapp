@@ -1,13 +1,26 @@
 <div class="blog">
+
+
   <div class="blog-heading">
+
+    <div class="blog-operations">
+      {% if user.username == b.username %}
+        <a href="/editblog/{{b.key().id()}}"> <img alt="Edit" src="/images/edit.png"></a>
+        <a href="/deleteblog/{{b.key().id()}}"> <img alt="Delete" src="/images/delete.png"></a>
+      {% endif %}
+    </div>
+  
     <div class="blog-title">
       <a href="/{{b.key().id()}}">{{b.subject}}</a>
+
+
 
       <div class="blog-username">
       {{b.username}}
       </div>
 
     </div>
+
 
 
 
@@ -31,11 +44,6 @@
   </div>
 
 
-  <div class="blog-delete">
-    {% if user.username == b.username %}
-      <a href="/editblog/{{b.key().id()}}"> Edit</a>
-      <a href="/deleteblog/{{b.key().id()}}"> Delete</a>
-    {% endif %}
-  </div>
+
 
 </div>
