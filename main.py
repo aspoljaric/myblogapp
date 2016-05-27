@@ -84,13 +84,18 @@ class Blog(db.Model):
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
     username = db.StringProperty(required = True)
-    likes = db.IntegerProperty(default = 0)
     is_deleted = db.BooleanProperty(required = True, default = False)
+
+    @classmethod
+    def number_of_likes(cls, blog_id):
+        numb_likes = Like.all().filter('blog_id =', blog_id).count()
+        return numb_likes
 
     def render(self, user):
         self._render_text = self.content.replace('\n', '<br>')
         t = jinja_env.get_template("post.html")
-        return t.render(b = self, user = user)
+        numb_likes = Blog.number_of_likes(self.key().id())
+        return t.render(b = self, user = user, numb_likes = numb_likes)
 #### End Blog Class
 
 #### Comment Class
@@ -152,6 +157,17 @@ class User(db.Model):
         if u and valid_pw(username.lower(), password, u.password_hash):
             return u
 ### End User Class
+
+#### Like Class
+class Like(db.Model):
+    blog_id = db.IntegerProperty(required = True)
+    username = db.StringProperty(required = True)
+
+    @classmethod
+    def by_username_by_blog_id(cls, username, blog_id):
+        l = Like.all().filter('username =', username.lower()).filter('blog_id =', blog_id).get()
+        return l
+#### End Like Class
 
 #### End Database Classes
 
@@ -330,10 +346,15 @@ class LikeBlogEntryPage(Handler):
                 self.error(404)
                 return
 
-            blog.likes += 1
-            blog.put()
+            existing_like = Like.by_username_by_blog_id(self.user.username, int(blog_id))
 
+            if not existing_like and (blog.username != self.user.username):
+                new_like = Like(blog_id = int(blog_id), username = self.user.username)
+                new_like.put()
+
+            time.sleep(0.1)
             self.redirect('/%s' % str(blog.key().id()))
+
         else:
             self.redirect("/login")
 
