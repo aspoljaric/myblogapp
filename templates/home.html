@@ -9,7 +9,7 @@
   </div>
   
   {% for b in blogs %}
-    {{ b.render() | safe }}
+    {{ b.render(user) | safe }}
     <br><br>
   {% endfor %}
 

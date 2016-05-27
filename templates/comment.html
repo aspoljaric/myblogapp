@@ -1,5 +1,12 @@
 <div class="comment">
   <div class="comment-content">
-    <li><b>{{c._render_text}}</b> - <i>{{ c.username }}</i> - {{c.created.strftime("%b %d, %Y")}}</li>
+    <li><b>{{c._render_text}}</b> - <i>{{ c.username }}</i> - {{c.created.strftime("%b %d, %Y")}}
+
+    {% if user.username == c.username %}
+      <a href="/editcomment/{{c.key().id()}}"> Edit</a>
+      <a href="/deletecomment/{{c.key().id()}}"> Delete</a>
+    {% endif %}
+
+    </li>
   </div>
 </div>

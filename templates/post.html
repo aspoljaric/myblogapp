@@ -29,4 +29,13 @@
   <div class="blog-comment">
     <a href="/comment/{{b.key().id()}}"> <img alt="Comment" src="/images/comment.png"></a>
   </div>
+
+
+  <div class="blog-delete">
+    {% if user.username == b.username %}
+      <a href="/editblog/{{b.key().id()}}"> Edit</a>
+      <a href="/deleteblog/{{b.key().id()}}"> Delete</a>
+    {% endif %}
+  </div>
+
 </div>

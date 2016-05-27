@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
+  {% if is_new %}
   <h4>New Post</h4>
+  {% else %}
+  <h4>Edit Post</h4>
+  {% endif %}
 
     <form method="post">
       <label>
@@ -17,6 +21,10 @@
       <div class="error">{{error}}</div>
 
       <br>
+      {% if is_new %}
       <input class="button" type="submit">
+      {% else %}
+      <input class="button" type="submit" value="Update">
+      {% endif %}
     </form>
 {% endblock %}

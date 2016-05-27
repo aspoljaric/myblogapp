@@ -2,13 +2,13 @@
 
 {% block content %}
 
-    {{blog.render() | safe}}
+    {{blog.render(user) | safe}}
 
     <br><br>
     
     {% if comments %}
         {% for c in comments %}
-            {{ c.render() | safe }}
+            {{ c.render(user) | safe }}
             <br><br>
         {% endfor %}
     {% endif %}

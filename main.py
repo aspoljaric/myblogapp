@@ -85,11 +85,12 @@ class Blog(db.Model):
     last_modified = db.DateTimeProperty(auto_now = True)
     username = db.StringProperty(required = True)
     likes = db.IntegerProperty(default = 0)
+    is_deleted = db.BooleanProperty(required = True, default = False)
 
-    def render(self):
+    def render(self, user):
         self._render_text = self.content.replace('\n', '<br>')
         t = jinja_env.get_template("post.html")
-        return t.render(b = self)
+        return t.render(b = self, user = user)
 #### End Blog Class
 
 #### Comment Class
@@ -98,11 +99,12 @@ class Comment(db.Model):
     comment = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     username = db.StringProperty(required = True)
+    is_deleted = db.BooleanProperty(required = True, default = False)
 
-    def render(self):
+    def render(self, user):
         self._render_text = self.comment.replace('\n', '<br>')
         t = jinja_env.get_template("comment.html")
-        return t.render(c = self)
+        return t.render(c = self, user = user)
 #### End Comment Class
 
 ### User Class
@@ -279,7 +281,7 @@ class LogoutHandler(Handler):
 class NewBlogHandler(Handler):
     def get(self):
         if self.user:
-            self.render("newblog.html")
+            self.render("newblog.html", is_new = True)
         else:
             self.redirect("/login")
 
@@ -300,7 +302,8 @@ class NewBlogHandler(Handler):
             error = "Please enter subject and content."
             params = dict(subject = subject,
                           content = content,
-                          error = error)
+                          error = error,
+                          is_new = True)
             self.render("newblog.html", **params)    
 
 
@@ -313,7 +316,7 @@ class BlogEntryPage(Handler):
             self.error(404)
             return
 
-        comments = Comment.all().order('-created').filter('blog_id =', int(blog_id))
+        comments = Comment.all().order('-created').filter('blog_id =', int(blog_id)).filter('is_deleted =', False)
         self.render("permalink.html", blog = blog, comments = comments)
 
 
@@ -333,6 +336,73 @@ class LikeBlogEntryPage(Handler):
             self.redirect('/%s' % str(blog.key().id()))
         else:
             self.redirect("/login")
+
+
+
+
+class DeleteBlogHandler(Handler):
+    def get(self, blog_id):
+        if self.user:
+            key = db.Key.from_path('Blog', int(blog_id))
+            blog = db.get(key)
+
+            if not blog:
+                self.error(404)
+                return
+
+            blog.is_deleted = True
+            blog.put()
+
+            time.sleep(0.1)
+            self.redirect('/')
+        else:
+            self.redirect("/login")
+
+
+class EditBlogHandler(Handler):
+    def get(self, blog_id):
+        if self.user:
+            key = db.Key.from_path('Blog', int(blog_id))
+            blog = db.get(key)
+
+            if not blog:
+                self.error(404)
+                return
+
+            params = dict(subject = blog.subject,
+                          content = blog.content,
+                          is_new = False)
+            self.render("newblog.html", **params)
+
+        else:
+            self.redirect("/login")
+
+    def post(self, blog_id):
+        if not self.user:
+            self.redirect('/')
+
+        key = db.Key.from_path('Blog', int(blog_id))
+        blog = db.get(key)
+
+        if not blog:
+            self.error(404)
+            return
+
+        subject = self.request.get('subject')
+        content = self.request.get('content')
+
+        if subject and content:
+            blog.subject = subject
+            blog.content = content
+            blog.put()
+            self.redirect('/%s' % str(blog.key().id()))
+        else:
+            error = "Please enter subject and content."
+            params = dict(subject = subject,
+                          content = content,
+                          error = error,
+                          is_new = False)
+            self.render("newblog.html", **params)    
 #### End Process operations on Blog Entries
 
 
@@ -340,7 +410,7 @@ class LikeBlogEntryPage(Handler):
 
 
 
-
+#### Process operations on Comment Entries
 class CommentHandler(Handler):
     def get(self, blog_id):
         if self.user:
@@ -351,7 +421,7 @@ class CommentHandler(Handler):
                 self.error(404)
                 return
 
-            self.render("newcomment.html")
+            self.render("newcomment.html", is_new = True)
 
         else:
             self.redirect("/login")
@@ -378,8 +448,73 @@ class CommentHandler(Handler):
         else:
             error = "Please enter a comment."
             params = dict(comment = comment,
-                          error = error)
+                          error = error,
+                          is_new = True)
             self.render("newcomment.html", **params)    
+
+
+class DeleteCommentHandler(Handler):
+    def get(self, comment_id):
+        if self.user:
+            key = db.Key.from_path('Comment', int(comment_id))
+            comment = db.get(key)
+
+            if not comment:
+                self.error(404)
+                return
+
+            comment.is_deleted = True
+            comment.put()
+
+            time.sleep(0.1)
+            self.redirect('/%s' % str(comment.blog_id))
+        else:
+            self.redirect("/login")
+
+
+
+class EditCommentHandler(Handler):
+    def get(self, comment_id):
+        if self.user:
+            key = db.Key.from_path('Comment', int(comment_id))
+            comment = db.get(key)
+
+            if not comment:
+                self.error(404)
+                return
+
+            params = dict(comment = comment.comment,
+                          is_new = False)
+            self.render("newcomment.html", **params)
+
+        else:
+            self.redirect("/login")
+
+    def post(self, comment_id):
+        if not self.user:
+            self.redirect('/')
+
+        key = db.Key.from_path('Comment', int(comment_id))
+        comment = db.get(key)
+        if not comment:
+            self.error(404)
+            return
+
+        comment_form = self.request.get('comment')
+
+        if comment_form:
+            comment.comment = comment_form
+            comment.put()
+
+            time.sleep(0.1)
+            self.redirect('/%s' % str(comment.blog_id))
+        else:
+            error = "Please enter a comment."
+            params = dict(comment = comment_form,
+                          error = error,
+                          is_new = False)
+            self.render("newcomment.html", **params)   
+#### End Process operations on Blog Entries
 
 
 
@@ -388,7 +523,7 @@ class CommentHandler(Handler):
 #### Home page
 class MainHandler(Handler):
     def get(self):
-        blogs = Blog.all().order('-created')
+        blogs = Blog.all().filter('is_deleted =', False).order('-created')
         self.render('home.html', blogs = blogs)
 #### End Home Page
 
@@ -405,5 +540,9 @@ app = webapp2.WSGIApplication([
     ('/signup', SignUpHandler),
     ('/newblog', NewBlogHandler),
     ('/like/([0-9]+)', LikeBlogEntryPage),
-    ('/comment/([0-9]+)', CommentHandler)
+    ('/comment/([0-9]+)', CommentHandler),
+    ('/deleteblog/([0-9]+)', DeleteBlogHandler),
+    ('/deletecomment/([0-9]+)', DeleteCommentHandler),
+    ('/editblog/([0-9]+)', EditBlogHandler),
+    ('/editcomment/([0-9]+)', EditCommentHandler)
 ], debug=True)
